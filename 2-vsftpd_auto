@@ -1,0 +1,39 @@
+#!/bin/bash
+#2020年8月21日 14:46:10
+#auto config vsftpd user
+#by author li
+##################
+yum install -y vsftpd*
+rpm -qa | grep vsftpd
+systemctl restart vsftpd.service
+yum install -y pam* libdb-utils libdb* --skip-broken 
+touch /etc/vsftpd/ftpusers.txt
+echo "jfedu001
+123456" > /etc/vsftpd/ftpusers.txt
+db_load -T -t hash -f /etc/vsftpd/ftpusers.txt /etc/vsftpd/vsftpd_login.db
+chmod 700 /etc/vsftpd/vsftpd_login.db
+echo "auth  required  pam_userdb.so  db=/etc/vsftpd/vsftpd_login
+account  required  pam_userdb.so  db=/etc/vsftpd/vsftpd_login">/etc/pam.d/vsftpd
+useradd -s /sbin/nologin ftpuser
+echo "
+#config virtual user FTP
+pam_service_name=vsftpd
+guest_enable=YES
+guest_username=ftpuser
+user_config_dir=/etc/vsftpd/vsftpd_user_conf
+virtual_use_local_privs=YES
+">>/etc/vsftpd/vsftpd.conf
+mkdir -p /etc/vsftpd/vsftpd_user_conf/
+touch /etc/vsftpd/vsftpd_user_conf/jfedu001
+echo "
+local_root=/home/ftpuser/jfde001
+write_enable=YES
+anon_world_readable_only=YES
+anon_upload_enable=YES
+anon_mkdir_write_enable=YES
+anon_other_write_enable=YES
+">/etc/vsftpd/vsftpd_user_conf/jfedu001
+
+mkdir -p /home/ftpuser/jfedu001
+chown -R ftpuser:ftpuser /home/ftpuser
+systemctl restart vsftpd.service
