@@ -37,3 +37,5 @@ anon_other_write_enable=YES
 mkdir -p /home/ftpuser/jfedu001
 chown -R ftpuser:ftpuser /home/ftpuser
 systemctl restart vsftpd.service
+systemctl stop firewalld.service
+setenforce 0
