@@ -1,0 +1,11 @@
+#!/bin/bash
+#使用yum安装部署lamp，需要提前配置好yum源，否则该脚本会失败
+#本脚本使用于centos7.x或RHEL7.x
+yum -y install httpd
+yum -y install mariadb mariadb-server mariadb-devel
+yum -y install php php-mysql
+
+systemctl start httpd
+systemctl start mariadb
+systemctl enable httpd
+systemctl enable mariadb
