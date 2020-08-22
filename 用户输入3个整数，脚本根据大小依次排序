@@ -1,0 +1,27 @@
+#!/bin/bash
+read -p "请输入一个整数:" num1
+read -p "请输入一个整数:" num2
+read -p "请输入一个整数:" num3
+#不管谁大谁小。最后都打印echo "$num1,$num2,$num3"
+#num1中永远存最小的值  num2中永远存中间值  num3中永远存最大值
+#如果输入的不是这样的顺序，则改变数的存储顺序，如：可以将num1,num2值对调
+tmp=0
+#如果num1大于num2，就把num1,num2值对调，确保num1变量中存的是最小值
+if [ $num1 -gt $num2 ];then
+ tmp=$num1
+ num1=$num2
+ num2=$tmp
+fi
+#如果num1值大于num3，就将num1，num3值对调，确保num1变量中存的是最小值
+if [ $num1 -gt $num3 ];then
+ tmp=$num1
+ num1=$num3
+ num3=$tmp
+fi
+#如果num2值大于num3，就将num2，num3值对调，确保num2变量中存的是小一点的值
+if [ $num2 -gt $num3 ];then
+ tmp=$num2
+ num2=$num3
+ num3=$tmp
+fi
+echo "排序后的数据为：#num1,$num2,$num3"
