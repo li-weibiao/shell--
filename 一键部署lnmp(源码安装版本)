@@ -1,0 +1,49 @@
+#!/bin/bash
+#Author:
+menu(){
+clear
+echo "##################----Menu---#####################"
+echo "#1.Install Nginx"
+echo "#2.Install Mysql"
+echo "#3.Install Php"
+echo "#4.Exit Program"
+echo "#####################################################"
+}
+
+choice(){
+  read -p "Please choice a menu[1-9]:" select
+}
+
+install_nginx(){
+  id nginx &>/dev/null
+  if [ $? -ne 0 ];then
+    useradd -s /sbin/nologin nginx
+  fi
+  if [ -f nginx-1.8.0.tar.gz ];then
+    tar -xf nginx-1.8.0.tar.gz
+    cd nginx-1.8.0
+    yum -y install gcc pcre-devel openssl-devel zlib-devel make
+    ./configure --prefix=/usr/local/nginx --with-http_ssl_module
+    make
+    make install
+    ln -s /usr/local/nginx/sbin/nginx /usr/sbin
+    cd ..
+  else
+    echo "没有Nginx源码包"
+  fi
+}
+
+install_mysql(){
+  yum -y install gcc gcc-c++ cmake ncurses-devel perl
+  id mysql >&/dev/null
+  if [ $? -ne 0 ];then
+    useradd -s /sbin/nologin mysql
+  fi
+  if [ -f mysql-5.6.25.tar.gz ];then
+    tar -xf  mysql-5.6.25.tar.gz
+    cd mysql-5.6.25
+    cmake
+    make
+    make install
+    /usr/local/mysql/scripts/mysql_install_db --user=mysql --datadir=/usr/local/mysql/data --basedir=/usr/local/mysql/
+ }
