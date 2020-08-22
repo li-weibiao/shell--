@@ -1,0 +1,60 @@
+!/bin/bash
+ls $2 >&/dev/null
+i=$(echo $?)
+jindu(){
+while [ $i -ne 0 ]
+do
+  echo -n '#'
+  sleep 0.2
+  for i in {1..30}
+  do
+  echo -n '#'
+  sleep 0.2
+  done
+  ls $2 >&/dev/null
+  i=$(echo $?)
+done
+}
+jindu
+cp -a $1 $2
+echo "拷贝完成！"
+
+########################################
+eg:
+
+1.cp -a 保留原文件属性的前提下复制文件 
+
+cp -r dirname（源文件） destdi（目标文件）
+
+复制目录后其文件属性会发生变化
+想要使得复制之后的目录和原目录完全一样包括文件权限，可以使用cp -a dirname destdir 
+
+2. $!
+Shell最后运行的后台Process的PID
+
+3.echo -n 不换行输出
+
+4.echo -e 处理特殊字符
+ 
+若字符串中出现以下字符，则特别加以处理，而不会将它当成一般文字输出：
+\a 发出警告声；
+\b 删除前一个字符；
+\c 最后不加上换行符号；
+\f 换行但光标仍旧停留在原来的位置；
+\n 换行且光标移至行首；
+\r 光标移至行首，但不换行；
+\t 插入tab；
+\v 与\f相同；
+\\ 插入\字符；
+\nnn 插入nnn（八进制）所代表的ASCII字符；
+ 
+$echo -e "a\bdddd"
+dddd
+ 
+$echo -e "a\adddd" //输出同时会发出报警声音
+adddd
+ 
+ 
+$echo -e "a\ndddd" //自动换行
+a
+dddd
