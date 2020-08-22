@@ -1,0 +1,68 @@
+#!/bin/bash
+#定义一个显示进度的函数，屏幕快速显示| / - \
+rotate_line(){
+INTERVAL=0.1                  #设置间隔时间
+COUNT='0'                     #设置4个形状的编号，默认编号为0（不代表任何图像）
+while :
+do
+COUNT=`expr $COUNT + 1`      #执行循环，COUNT每次循环加1，分别代表4中不同的形状
+case $COUNT in               #判断COUNT的值，值不一样显示的形状就不一样
+"1")                         #值为1时显示-
+ echo -e '-'"\b\c"
+ sleep $INTERVAL
+ ;;
+"2")                        #值为2时显示\\,第一个\是转义
+ echo -e '\\'"\b\c"
+ sleep $INTERVAL
+ ;;
+"3")                       #值为3时显示|
+  echo -e "|\b\c"
+  sleep $INTERVAL
+ ;;
+"4")                       #值为4时显示/
+  echo -e "/\b\c"
+  sleep $INTERVAL
+ ;;
+*)                         #为其他值时，将COUNT重值为0
+  COUNT="0";;
+ esac
+done
+}
+rotate_line
+#####################################################################
+eg:echo -n 不换行输出
+
+    $echo -n "123"
+    $echo "456"
+
+    最终输出 
+    123456
+     
+    而不是
+    123
+    456
+
+echo -e 处理特殊字符
+
+若字符串中出现以下字符，则特别加以处理，而不会将它当成一般文字输出： 
+\a 发出警告声； 
+\b 删除前一个字符； 
+\c 最后不加上换行符号； 
+\f 换行但光标仍旧停留在原来的位置； 
+\n 换行且光标移至行首； 
+\r 光标移至行首，但不换行； 
+\t 插入tab； 
+\v 与\f相同； 
+\ 插入\字符； 
+\nnn 插入nnn（八进制）所代表的ASCII字符；
+
+    $echo -e "a\bdddd"
+    dddd
+
+    $echo -e "a\adddd" //输出同时会发出报警声音
+    adddd
+
+    $echo -e "a\ndddd" //自动换行
+    a
+    dddd
+
