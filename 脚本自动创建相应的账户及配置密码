@@ -1,0 +1,32 @@
+#!/bin/bash
+read -p "请输入用户名：" user
+#使用-z可以判断一个变量是否为空，如果为空，提示用户必须输入账户名，并退出脚本，退出码为2
+#没有输入用户名脚本退出后，使用$？查看的返回码为2
+if [ -z $user ];then
+ echo "您必须输入账户名"
+ exit 2
+fi
+#使用stty -echo 关闭shell的回显功能
+#使用stty echo 打开shell的回显功能
+stty -echo
+read -p "请输入密码：" pass
+stty echo 
+pass=${pass:-123456}
+useradd "$user"
+echo "$pass" | passwd --stdin "$user"
+
+######################################################
+eg:(1) var:−string和
+
+{var:=string}
+
+若变量var为空或者未定义,则用在命令行中用string来替换var:−string∗∗∗∗否则变量var不为空时,则用变量var的值来替换
+{var:-string}
+
+(2) ${var:+string}
+规则和上面的完全相反
+即只有当var不是空的时候才替换成string,若var为空时则不替换或者说是替换成变量var的值,即空值
+
+(3). var:?string∗∗∗∗替换规则:若变量var不为空,则用变量var的值来替换{var:?string}
+若变量var为空,则把string输出到标准错误中,并从脚本中退出。
+可利用此特性来检查是否设置了变量的值
