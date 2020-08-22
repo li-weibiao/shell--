@@ -1,0 +1,104 @@
+#!/bin/bash
+while :
+do 
+  echo '本地网卡eth0流量信息如下:'
+  ifconfig eth0 | grep "RX pack" | awk '{print $5}'
+  ifconfig eth0 | grep "TX pack" | awk '{print $5}'
+  slepp 1
+done
+################################################
+eg:定义一个无限while循环可以使用如下3种命令：
+true命令 ：不做任何事，表示成功，总是返回退出状态码0。
+fail命令 ：不做任何事，表示成功，总是返回退出状态码1。
+：           ：无作用，此命令也不做任何事，但是返回退出状态码0。
+
+使用“:”命令定义一个无限循环实例
+[root@aa ~]# cat infinitewhile_colon.sh
+#!/bin/bash -
+
+while :
+do
+    echo "Do something..."
+    echo "Hit [ CTRL+C ] to stop!"
+    sleep 3
+done
+[root@aa ~]# ./infinitewhile_colon.sh
+Do something...
+Hit [ CTRL+C ] to stop!
+Do something...
+Hit [ CTRL+C ] to stop!
+Do something...
+Hit [ CTRL+C ] to stop!
+^C
+
+使用true命令定义一个无限循环实例
+[root@aa ~]# cat infinitewhile_true.sh
+#!/bin/bash -
+
+while true
+do
+    echo "Do something..."
+    echo "Hit [ CTRL+C ] to stop!"
+    sleep 3
+done
+[root@aa ~]# ./infinitewhile_true.sh
+Do something...
+Hit [ CTRL+C ] to stop!
+^C
+
+菜单驱动程序实例
+[root@aa ~]# cat whilemenu.sh
+#!/bin/bash -
+
+while :
+do
+    clear                   #清理终端屏幕
+    echo "================================"
+    echo "         MAIN - MENU         "
+    echo "================================"
+    echo "1. Display date and time."
+    echo "2. Display system information."
+    echo "3. Display what users are doing."
+    echo "4. Exit."
+
+    read -p "Enter your choice [ 1-4 ]: " choice  #从标准输入中读取用户的输入，并赋值给变量choice
+
+    case $choice in
+    1)
+        echo "Today is $(date +%Y-%m-%d)." #打印当前日期，格式为“YYYY-MM-DD”
+        echo "Current time: $(date +%H:%M:%S)" #打印当前时间，格式为“hh:mm:ss”
+        read -p "Press [Enter] key to continue..." readEnterKey
+        #只读入回车换行符
+        ;;
+    2)
+        uname -a #打印系统信息
+        read -p "Press [Enter] key to continue..." readEnterKey
+        ;;
+    3)
+        w
+        read -p "Press [Enter] key to continue..." readEnterKey
+        ;;
+    4)
+        echo "Bye!"
+        exit 0
+        ;;
+    *)
+        echo "Error: Invalid option!"
+        read -p "Press [Enter] key to continue..." readEnterKey
+        ;;
+    esac
+done
+
+[root@aa ~]# ./whilemenu.sh
+
+================================
+         MAIN - MENU        
+================================
+1. Display date and time.
+2. Display system information.
+3. Display what users are doing.
+4. Exit.
+Enter your choice [ 1-4 ]: 1
+Today is 2018-08-17.
+Current time: 14:05:13
+Press [Enter] key to continue...
