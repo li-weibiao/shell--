@@ -1,0 +1,207 @@
+#!/bin/bash
+#Author:
+#删除~/.ssh/known_hosts后，ssh远程任何主机都会询问是否确认要连接该主机
+rm -rf ~/.ssh/known_hosts
+expect <<EOF
+spawn ssh 192.168.4.254
+expect "yes/no"  {send "yes\r"}
+#根据自己的实际情况将密码修改为真实的密码字串
+expect "passwd"  {send "密码\r"}
+expect "#"  {send "yum -y install httpd\r"}
+expect "#"  {send "exit\r"}
+EOF
+##################################################
+
+
+一、EOF的用法
+
+EOF是（END Of File）的缩写，表示自定义终止符。既然自定义，那么EOF就不是固定的，可以随意设置别名，在linux按ctrl-d就代表EOF。
+
+EOF一般会配合cat能够多行文本输出。
+
+其用法如下：
+
+<<EOF        #开始
+
+....                  #输入内容
+
+EOF            #结束
+
+还可以自定义，比如自定义：
+
+<<ABC        #开始
+
+....
+
+ABC              #结束
+
+通过cat配合重定向能够生成文件并追加操作，在它之前先熟悉几个特殊符号
+
+<：输入重定向
+
+>：输出重定向
+
+>>：输出重定向,进行追加,不会覆盖之前内容
+
+<<：标准输入来自命令行的一对分隔号的中间内容
+
+例子1：
+
+[root@ren5 ~]# cat <<EOF
+
+> hello
+
+> EOF
+
+hello
+
+我们知道cat的操作对象是文件，但是例1中cat的操作对象不是文件，而是用户输入；那么我们可以这样理解例1：先在文件file中输入“Hello”，再用cat file输出其中的内容。
+
+也就是说我们可以用一个文件来替代"<< EOF EOF"。
+
+反过来说，如果操作命令中的文件是输入对象，也可以用"<< EOF EOF"来替代的。
+
+例子2：
+
+[root@ren5 ~]# cat 1.txt
+
+abc
+
+[root@ren5 ~]# cat <<EOF > 1.txt             #向文件1.txt输入覆盖内容（也可以：cat > 1.txt <<EOF）
+
+> 123
+
+> 456
+
+> 678
+
+> LOL
+
+> EOF
+
+[root@ren5 ~]# cat 1.txt
+
+123
+
+456
+
+678
+
+LOL
+
+“<< EOF EOF”的作用是在命令执行过程中用户自定义输入，它类似于起到一个临时文件的作用，只是比使用文件更方便灵活。
+
+二、cat <<EOF 与 cat <<-EOF 的区别
+
+两个都是获取stdin，并在EOF处结束stdin，输出stdout。
+
+在我们使用cat <<EOF时，我们输入完成后，需要在一个新的一行输入EOF结束stdin的输入。EOF必须顶行写，前面不能用制表符或者空格。
+
+如果重定向的操作符是<<-，那么分界符（EOF）所在行的开头部分的制表符（Tab）都将被去除。这可以解决由于脚本中的自然缩进产生的制表符。
+
+例子1：
+
+[root@ren5 ~]# cat 2.sh
+
+#!/bin/bash
+
+cat <<EOF
+
+你好，EOF！
+
+EOF
+
+[root@ren5 ~]# sh 2.sh
+
+你好，EOF！
+
+[root@ren5 ~]# sh 2.sh
+
+2.sh:行4: 警告:立即文档在第 2 行被文件结束符分隔 (需要 `EOF')
+
+你好，EOF！
+
+      EOF
+
+如果结束分解符EOF前有制表符或者空格，则EOF不会被当做结束分界符，只会继续被当做stdin来输入。
+
+例子2：
+
+[root@ren5 ~]# cat 2.sh
+
+#!/bin/bash
+
+cat <<-EOF
+
+你好，EOF！
+
+      EOF
+
+[root@ren5 ~]# sh 2.sh
+
+你好，EOF！
+
+虽然最后的EOF前面有多个制表符和空格，但仍然会被当做结束分界符，表示stdin的结束。
+
+
+
+###################################################
+eg: shell expect的简单实用
+
+一.在shell脚本中嵌入expect来实现密码输入
+expect是一个自动交互功能的工具。expect是开了一个子进程，通过spawn来执行shell脚本，监测到脚本的返回结果，通过expect判断要进行的交互输入内容（send）
+1.安装expect 
+需要先安装tcl：apt-get install tcl
+apt-get install expect
+ 
+2.expect使用
+2.1一个简单的输入密码操作
+#！/usr/bin/expect
+set timeout 100
+set password "123456"
+spawn sudo rm -rf zzlogic
+expect "root123456"
+send "$password\n"
+interact
+说明：
+第一行#！/usr/bin/expect表示使用expect的shell交互模式
+set是对变量password赋值
+set timeout 100：设置超时时间为100秒，如果要执行的shell命令很长可以设置超时时间长一些。expect超过超时时间没有监测到要找的字符串，则不执行，默认timeout为10秒
+spawn在expect下执行shell脚本
+expect对通过spawn执行的shell脚本的返回进行判断，是否包含“”中的字段
+send：如果expect监测到了包含的字符串，将输入send中的内容，\n相当于回车
+interact：退出expect返回终端，可以继续输入，否则将一直在expect不能退出到终端
+ 
+2.2expect的命令行参数
+[lindex $argv n]获得index为n的参数（index从0开始计算）
+$argc为命令行参数的个数
+[lrange $argv 0 0]表示第一个参数
+[lrange $argv 0 3]表示第1到第3个参数
+ 
+例如scp_service.sh文件，可以./scp_service.sh -rm来执行，这时是赋值了一个参数
+set option  [lindex $argv 0]（获得第一个参数存到变量option中，参数是的index是从0开始计算的）
+ 
+2.3if...elif...else...
+expect支持if语句，
+if {条件1} {
+     条件1执行语句
+} elif {条件2} {
+     条件2执行语句
+} else {
+     其他情况执行语句
+}
+说明：
+1.if的条件用{}来包含条件
+2.if和后面的{}必须有空格隔开
+3.两个花括号之间必须有空格隔开，比如if {} {}，否则会报错 expect:extra characters after close-brace
+3.使用{来衔接下一行，所以if的条件后需要加左花括号{
+4.else不能单独放一行，所以else要跟在}后面
+ 
+2.4 expect {}，多行期望，匹配到哪条执行哪条
+背景：有时执行shell后预期结果是不固定的，有可能是询问是yes/no，有可能是去输入密码，所以可以用expect{}
+花括号内放多行语句，从上至下匹配，匹配到哪个expect执行哪句。
+ 
+3.shell中调用expect来实现登录
+我是通过在shell脚本中执行expect脚本的方式来实现的。当然可以将shell中定义的一些变量传递给expect脚本作为参数输入。可以见我下图调用的一个例子
+ 
+说明：经过这次尝试些expect，给我的感觉是expect对格式的要求比较高，比如花括号之间必须有空格啊之类的，所以如果有报错，大家可以仔细观察一下是不是语法格式错误了。
