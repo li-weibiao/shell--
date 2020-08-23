@@ -1,0 +1,32 @@
+#!/bin/bash
+#本脚本需要提前下载varnish-3.0.6.tar.gz这样一个源码包软件，该脚本即可用自动源码安装部署软件
+yum -y install gcc readline-devel pcre-devel
+useradd -s /sbin/nologin varnish
+tar -xf varnish-3.0.6.tar.gz
+cd varnish-3.0.6
+
+#使用configure,make,make install源码安装软件包
+./configure --prefix=/usr/local/varnish
+make && make install
+
+#在源码包目录下，将相应的配置文件拷贝到linux系统文件系统中
+#默认安装完成后，不会自动拷贝或安装配置文件到linux系统，所以需要手动cp复制配置文件
+#并使用uuidgen生成一个随即密钥的配置文件
+
+cp redhat/varnish.initrc /etc/init.d/varnish
+cp redhat/varnish.sysconfig /etc/sysconfig/varnish
+cp redhat/varnish_reload_vcl /usr/bin
+ln -s /usr/local/varnish/sbin/varnishd /usr/sbin
+ln -s /usr/local/varnish/bin/* /usr/bin
+mkdir /etc/varnish
+cp /usr/local/varnish/etc/varnish/default.vcl /etc/varnish
+uuidgen > /etc/varnish/secret
+
+###############################################
+eg:
+Varnish是什么
+Varnish作用是访问web速度的web加速器，被安装在web服务器之前，从而缓存web服务器的应用程序和数据，最后相应客户的请求。 
+功能与Squid服务器相似，都可以用来做HTTP缓存。与Squid不同之处在于，Squid是从硬盘读取缓存的数据，而Varnish把数据存放在内存中，
+直接从读取内存，避免了频繁在内存、磁盘中交换文件，所以Varnish要相对更高效，但也有缺点，内存中的缓存在服务器重启后会丢失。
+
+参考链接：https://blog.csdn.net/xinzhao1995/article/details/82809355?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.add_param_isCf
