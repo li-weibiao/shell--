@@ -7,3 +7,6 @@ awk -F: '/bash$/{x++}end{print x}' /etc/passwd
 ########################################################
 eq:-f scripfile or --file scriptfile
 从脚本文件中读取awk命令。
+
+
+awk参数：https://www.runoob.com/linux/linux-comm-awk.html    
