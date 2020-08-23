@@ -1,7 +1,7 @@
 #!/bin/bash
 #Author:
 #提取根分区剩余空间
-disk_size=$(df /|awk '/\//{print $4}')
+disk_size=$(df /|awk '/\//{print $4}')       #//使用正则匹配
 #提取内存剩余空间
 mem_size=$(free | awk '/Mem/{print $4}')
 while:
@@ -13,8 +13,15 @@ if [ $disk_size -le 512000 -a $mem_size -le 1024000 ];then
 EOF
 fi
 done
-
+############################################################################
 #Shell中通常将EOF与 << 结合使用，表示后续的输入作为子命令或子Shell的输入，直到遇到EOF为止，再返回到主调Shell。
 可以把EOF替换成其他东西，意思是把内容当作标准输入传给程序。
 回顾一下< <的用法。当shell看到< <的时候，它就会知道下一个词是一个分界符。在该分界符以后的内容都被当作输入。
 直到shell又看到该分界符(位于单独的一行)。这个分界符可以是你所定义的任何字符
+
+#正则表达式
+如果想让 awk 识别字符串，则必须使用"//"包含，例如：
+
+[root@localhost ~]# awk '/Liming/ {print}' student.txt
+#打印Liming的成绩
+1 Liming 82 95 86 87.66
