@@ -3,11 +3,47 @@
 ./test.sh user.sh
 #############################
 #!/bin/bash
-#先使用grep判断对象脚本是否已经有解释器信息，如果没有则使用sed添加解释器以及描述信息
-if ! grep -q "^#!" $1;then
-sed '1i#!/bin/bash' $1
-sed '2i#Description:'
+#先使用grep判断对象脚本是否已经有解释器信息，如果没有则使用sed添
+加解释器以及描述信息
+grep  "^#!" $1 >&/dev/null
+if [ $? -ne 0 ];then
+sed -i "1 i\#!/bin/bash" $1          #文档里要有内容，否则sed功能可能会失效
+sed -i '2i #Description:' $1
 fi
-#因为每个脚本的功能不同，作用不同，所以在给对象脚本添加完解释器信息，以及description后还希望继续编辑具体的脚本功能的描述信息，这里直接使用vim把对象脚本打开，并且
+#因为每个脚本的功能不同，作用不同，所以在给对象脚本添加完解释器>信息，以及description后还希望继续编辑具体的脚本功能的描述信息，>这里直接使用vim把对象脚本打开，并且
 #光标跳转到该文件的第二行
 vim +2 $1
+###################################################
+eg:
+ sed命令实现对文件内容的添加
+复制代码
+
+：(对源文件添加的话就用-i参数)
+-i参数是对源文件进行修改；
+1 i\  在第一行前面添加；
+2 i\  在第二行前面添加；
+$a \  在最后一行后面添加；
+[root@zhangchao ~]# cat ws.txt
+I am Zhang Chao, I am from Num 20156.
+[root@zhangchao ~]# sed -i '1 i\I Love Snow!' ws.txt
+[root@zhangchao ~]# cat ws.txt
+I Love Snow!
+I am Zhang Chao, I am from Num 20156.
+[root@zhangchao ~]# sed -i '$a \I Love Snow!' ws.txt
+[root@zhangchao ~]# cat ws.txt
+I Love Snow!
+I am Zhang Chao, I am from Num 20156.
+I Love Snow!
+[root@zhangchao ~]# sed -i '2 i\Snow is Beautiful!' ws.txt
+[root@zhangchao ~]# cat ws.txt
+I Love Snow!
+Snow is Beautiful!
+I am Zhang Chao, I am from Num 20156.
+I Love Snow!
+
+#6）文件的行首添加一行  
+  [root@jie1 ~]# sed -i '1 i\sed command start' myfile  
+#7）文件的行尾追加一行  
+  [root@jie1 ~]# sed -i '$a \sed command end' myfile 
+  
+参考链接：https://www.cnblogs.com/ggzhangxiaochao/p/13131424.html
