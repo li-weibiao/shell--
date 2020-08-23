@@ -1,0 +1,57 @@
+#!/bin/bash
+awk '{ip[$1]++}END{for(i in ip){print ip[i],i}}' /var/log/httpd/access_log
+#########################################################
+eg:BEGIN是在文本处理之前执行的语句，文本没有开始处理，谈不上第一行
+END是在文本处理完成之后执行的语句，文本处理完成，当前行就是最后一行
+
+[root@ecs-001 ~]# awk '{print ip}' /usr/local/apache2/logs/access_log
+
+[root@ecs-001 ~]# awk '{print 1}' /usr/local/apache2/logs/access_log
+1
+[root@ecs-001 ~]# awk '{print $1}' /usr/local/apache2/logs/access_log
+117.173.225.97
+[root@ecs-001 ~]# awk '{print 2}' /usr/local/apache2/logs/access_log
+2
+[root@ecs-001 ~]# awk '{ip[$1]++}' /usr/local/apache2/logs/access_log           #指令不完整没效果，个人理解相当于是创建了ip[]这个列表，将查到了的ip地址全部放在了这个列表里
+[root@ecs-001 ~]# awk 'END{for(i in ip){print ip[i],i}}' /usr/local/apache2/logs/access_log  
+[root@ecs-001 ~]# awk '{ip[$1]++}END{for(i in ip){print ip[i],i}}' /usr/local/apache2/logs/access_log    #然后print i，将ip地址给输出来了
+1 117.173.225.97
+[root@ecs-001 ~]# awk '{ip[$1]++}END{for(i in ip){print i,ip[i]}}' /usr/local/apache2/logs/access_log
+117.173.225.97 1
+[root@ecs-001 ~]# sh shizhen.sh 
+^C^C
+[root@ecs-001 ~]# awk '{ip[$1]}END{for(i in ip){print i,ip[i]}}' /usr/local/apache2/logs/access_log
+117.173.225.97 
+[root@ecs-001 ~]# cp /usr/local/apache2/logs/access_log  access_log
+[root@ecs-001 ~]# ls
+access_log  httpd-2.2.34  httpd-2.2.34.tar.gz  mysql-5.5.20  mysql-5.5.20.tar.gz  mysql-proxy-0.8.5-linux-el6-x86-64bit.tar.gz  shizhen.sh
+[root@ecs-001 ~]# vi access_log                                                                    #输入了三个地址，117.173.225.97，117.173.225.97，125.78.69.70
+[root@ecs-001 ~]# awk '{ip[$1]}END{for(i in ip){print i,ip[i]}}' access_log     #但最后只显示了2个，说明会自动去掉重复的
+117.173.225.97 
+125.78.69.70 
+[root@ecs-001 ~]# awk '{ip[$1]++}END{for(i in ip){print i,ip[i]}}' access_log    #加上++ ，就有了print ip[i] 统计出现了次数的效果，说明可以累加了
+117.173.225.97 2
+125.78.69.70 1
+[root@ecs-001 ~]# sh shizhen.sh 
+^C
+[root@ecs-001 ~]# awk '{ip[$1]++}END{for(i in ip){print ip[i]}}' access_log   #验证只有print ip[i]的效果，只出现统计数字
+2
+1
+[root@ecs-001 ~]# awk '{ip[$1]}END{for(i in ip){print ip[i]}}' access_log    #验证没有++，则不会出现print ip[i]的效果，说明print ip[i]的效果只对应前面的++
+
+
+[root@ecs-001 ~]# awk '{ip[$1]}END{for(i in ip){print i}}' access_log  #验证只有print i的效果，只出现ip,说明可以把for i in ip里的ip当成一个存放IP地址的列表或仓库,对应前面的ip[$1]
+117.173.225.97
+125.78.69.70
+[root@ecs-001 ~]# awk '{ip[$1]++}END{for(i in ip){print i}}' access_log  #验证有++的情况下，只显示print i的效果，证明自己的理解不算有误
+117.173.225.97
+125.78.69.70
+
+#####################################################################
+ Q：awk '{a[$1]++}END{for (j in a) print a[j]"|"j}'
+这个{a[$1]++}END{for (j in a)....}这个具体什么意思有没有大神能解释下
+
+A：a[$1] 是一个关联数组，类似于baic++中的dumap，其中$1的值是键，a[$1]对应的内容就是值，这个值如zhi果是数字，则可以做dao加减运算。所以 a[$1]++ 就是指数组a中下标为$1对应的值增加1；
+
+for ( j in a) 是循环遍历数组a中键值对的用法，j就是依次获取数组a中的下标
+
