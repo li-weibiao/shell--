@@ -1,0 +1,40 @@
+#!/bin/bash
+#对虚拟机的vdb磁盘进行分区格式化，使用<<将需要的分区指令导入给程序fdisk
+#n(新建分区),p(创建主分区),1(分区编号为1),两个空白行(两个回车，相当于将整个磁盘分一个区)
+#注意：1后面的两个回车（空白行）是必须的！
+fdisk /dev/vdb <<EOF
+n
+p
+1
+
+
+wq
+EOF
+
+#格式化刚刚创建好的分区
+mkfs.xfs /dev/vdb1
+
+#创建挂载点目录
+if [ -e /data ];then
+  exit
+else
+  mkdir /data
+fi
+
+#自动挂载刚刚创建的分区，并设置开机自动挂载该分区
+echo '/dev/vdb1   /data   xfs   defaults 1 2' >> /etc/fstab
+mount -a 
+
+###########################################
+eg:
+-e filename 如果 filename存在，则为真
+-d filename 如果 filename为目录，则为真 
+-f filename 如果 filename为常规文件，则为真
+-L filename 如果 filename为符号链接，则为真
+-r filename 如果 filename可读，则为真 
+-w filename 如果 filename可写，则为真 
+-x filename 如果 filename可执行，则为真
+-s filename 如果文件长度不为0，则为真
+-h filename 如果文件是软链接，则为真
+filename1 -nt filename2 如果 filename1比 filename2新，则为真。
+filename1 -ot filename2 如果 filename1比 filename2旧，则为真。
