@@ -1,0 +1,14 @@
+#/bin/bash
+#Author:
+#本脚本每2秒检测一次MySQL并发连接数,可以将本脚本设置为开机启动脚本,或在特定时间段执行
+#以满足对MySQL数据库的监控需求,查看 MySQL连接是否正常
+#本案例中的用户名和密码需要根据实际情况修改后方可使用
+ log_file=/var/log/mysql_count.log               #设置变量
+ user=root                                       #设置变量
+ passwd=123456                                   #设置变量
+ while:
+ do
+  sleep 2
+  count=`mysqladmin -u "$user"-p "$passwd" status | awk '(print $4)'`
+  echo"`date+%Y-%m-%d`并发连接数为:$count">>$log_file
+ done
