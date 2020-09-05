@@ -1,0 +1,4 @@
+#!/bin/bash
+virt-df #虚拟机磁盘使用量
+read -n1 "按任意键继续" key
+virt-top # CPU 使用量
