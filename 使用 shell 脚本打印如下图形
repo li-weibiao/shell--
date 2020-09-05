@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#打印第一组图片
+#for(())为类 C 语言的语法格式,也可以使用 for i in;do;done 的格式替换
+#for((i=1;i<=9;i++))循环会执行 9 次,i 从 1 开始到 9,每循环一次 i 自加 1
+clear
+for (( i=1; i<=9; i++ ))
+do
+     for (( j=1; j<=i; j++ ))
+     do
+          echo -n "$i"   # -n 不输出行尾的换行符
+    done
+    echo ""  #换行
+done
+
+#打印第二组图片
+clear
+for (( i=1; i<=5; i++ ))
+do
+     for (( j=1; j<=i; j++ ))
+     do
+         echo -n " |"
+     done
+     echo "_ "
+done
+
+#打印第三组图片
+clear
+for (( i=1; i<=5; i++ ))   #打印上一半
+do
+      for (( j=1; j<=i; j++ ))
+      do
+           echo -n " *"
+      done
+      echo ""
+done   
+for (( i=5; i>=1; i-- ))  #打印下一半
+do
+     for (( j=1; j<=i; j++ ))
+     do
+         echo -n " *"
+     done
+     echo ""
+done
