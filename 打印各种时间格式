@@ -1,0 +1,27 @@
+#!/bin/bash
+echo "显示星期简称(如:Sun)"
+date +%a    # 二
+echo "显示星期全称(如:Sunday)"
+date +%A   # 星期二
+echo "显示月份简称(如:Jan)"
+date +%b  # 3月
+echo "显示月份全称(如:January)"
+date +%B  # 三月
+echo "显示数字月份(如:12)"
+date +%m  # 03
+echo "显示数字日期(如:01 号)"
+date +%d  # 12
+echo "显示数字年(如:01 号)"
+date +%Y  # 2019
+echo "显示年-月-日"
+date +%F  # 2019-03-12
+echo "显示小时(24 小时制)"
+date +%H  # 18
+echo "显示分钟(00..59)"
+date +%M  # 57
+echo "显示秒"  
+date +%S   # 43
+echo "显示纳秒"
+date +%N   # 834016051
+echo "组合显示"
+date +"%Y%m%d %H:%M:%S"   # 20190312 18:57:43
